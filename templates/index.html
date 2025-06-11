@@ -1,98 +1,317 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Google Fonts (Exemplo: Inter) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor do Sistema</title>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .card {
-            border-radius: 1rem;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
         }
 
-        .icon-lg {
-            font-size: 2.5rem;
+        .card h3 {
+            margin-top: 0;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
         }
 
-        .explanation {
-            font-size: 0.95rem;
-            color: #6c757d;
+        .resource-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .resource-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .resource-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .cpu-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        }
+
+        .memory-fill {
+            background: linear-gradient(90deg, #2196F3, #03A9F4);
+        }
+
+        .disk-fill {
+            background: linear-gradient(90deg, #FF9800, #FFC107);
+        }
+
+        .resource-text {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .status-good {
+            color: #38a169;
+        }
+
+        .status-warning {
+            color: #d69e2e;
+        }
+
+        .status-danger {
+            color: #e53e3e;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #f7fafc;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .info-value {
+            color: #2d3748;
+        }
+
+        .gpu-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .gpu-card h4 {
+            margin: 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container py-5">
-        <header class="mb-5 text-center">
-            <img src="https://img.freepik.com/premium-vector/system-monitoring-icon_23785-2166.jpg?w=1380" class="mb-3"
-                style="width:180px;" alt="logo" />
-            <h1 class="fw-bold">Monitoramento do Sistema <span class="text-primary"><i class="bi bi-cpu"></i></span>
-            </h1>
-            <p class="lead">Veja informações em tempo real sobre o uso de recursos do seu servidor Flask.</p>
-        </header>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card p-4 text-center">
-                    <div class="mb-2 text-primary"><i class="bi bi-cpu icon-lg"></i></div>
-                    <h5 class="fw-bold">Uso do CPU</h5>
-                    <p class="display-6 fw-bold">{{ cpu_percent }}%</p>
-                    <div class="explanation">
-                        Indica a porcentagem de uso do processador neste momento. Valores altos podem indicar que o sistema
-                        está processando muitas tarefas simultaneamente.
-                    </div>
+    <div class="container">
+        <h1>🖥️ Monitor do Sistema</h1>
+
+        <div class="grid">
+            <!-- Informações do Sistema -->
+            <div class="card">
+                <h3>💻 Informações do Sistema</h3>
+                <div class="info-row">
+                    <span class="info-label">Sistema:</span>
+                    <span class="info-value">{{ info.sistema }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Hostname:</span>
+                    <span class="info-value">{{ info.hostname }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Arquitetura:</span>
+                    <span class="info-value">{{ info.arquitetura }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Processador:</span>
+                    <span class="info-value">{{ info.processador }}</span>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card p-4 text-center">
-                    <div class="mb-2 text-success"><i class="bi bi-memory icon-lg"></i></div>
-                    <h5 class="fw-bold">Uso da Memória RAM</h5>
-                    <p class="display-6 fw-bold">{{ ram_percent }}%</p>
-                    <div class="explanation">
-                        Mostra quanto da memória RAM está sendo utilizada. Se estiver próximo de 100%, o sistema pode
-                        ficar lento.
+
+            <!-- CPU -->
+            <div class="card">
+                <h3>⚡ CPU</h3>
+                <div class="resource-info">
+                    <div class="resource-text">
+                        Uso: {{ info.cpu.percentual }}% - Disponível: {{ 100 - info.cpu.percentual }}%
                     </div>
+                    <div class="resource-bar">
+                        <div class="resource-fill cpu-fill" style="width: {{ info.cpu.percentual }}%"></div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Cores Físicos:</span>
+                    <span class="info-value">{{ info.cpu.cores_fisicos }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Cores Lógicos:</span>
+                    <span class="info-value">{{ info.cpu.cores_logicos }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Frequência Atual:</span>
+                    <span class="info-value">{{ info.cpu.frequencia_atual }} MHz</span>
+                </div>
+                {% if info.cpu.temperatura %}
+                <div class="info-row">
+                    <span class="info-label">Temperatura:</span>
+                    <span class="info-value">{{ info.cpu.temperatura }}°C</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Memória RAM -->
+            <div class="card">
+                <h3>🧠 Memória RAM</h3>
+                <div class="resource-info">
+                    <div class="resource-text">
+                        Total: {{ info.memoria.total_gb }}GB - Utilizando: {{ info.memoria.usado_gb }}GB - Disponível: {{ info.memoria.disponivel_gb }}GB
+                    </div>
+                    <div class="resource-bar">
+                        <div class="resource-fill memory-fill" style="width: {{ info.memoria.percentual }}%"></div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Percentual de Uso:</span>
+                    <span class="info-value {% if info.memoria.percentual > 80 %}status-danger{% elif info.memoria.percentual > 60 %}status-warning{% else %}status-good{% endif %}">
+                        {{ info.memoria.percentual }}%
+                    </span>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card p-4 text-center">
-                    <div class="mb-2 text-info"><i class="bi bi-hdd-network icon-lg"></i></div>
-                    <h5 class="fw-bold">Outros Dados</h5>
-                    <ul class="list-unstyled mb-0">
-                        <li><strong>Tempo ligado:</strong> {{ uptime }}</li>
-                        <li><strong>Processos ativos:</strong> {{ processes }}</li>
-                        <li><strong>Uso de disco:</strong> {{ disk_percent }}%</li>
-                    </ul>
-                    <div class="explanation">
-                        <strong>Tempo ligado:</strong> quanto tempo o sistema está em funcionamento.<br>
-                        <strong>Processos ativos:</strong> quantidade de programas/processos rodando.<br>
-                        <strong>Uso de disco:</strong> porcentagem de espaço utilizado no disco principal.
+
+            <!-- Disco -->
+            <div class="card">
+                <h3>💾 Armazenamento</h3>
+                <div class="resource-info">
+                    <div class="resource-text">
+                        Total: {{ info.disco.total_gb }}GB - Utilizando: {{ info.disco.usado_gb }}GB - Livre: {{ info.disco.livre_gb }}GB
+                    </div>
+                    <div class="resource-bar">
+                        <div class="resource-fill disk-fill" style="width: {{ info.disco.percentual }}%"></div>
                     </div>
                 </div>
+                <div class="info-row">
+                    <span class="info-label">Percentual de Uso:</span>
+                    <span class="info-value {% if info.disco.percentual > 90 %}status-danger{% elif info.disco.percentual > 75 %}status-warning{% else %}status-good{% endif %}">
+                        {{ info.disco.percentual }}%
+                    </span>
+                </div>
+            </div>
+
+            <!-- Rede -->
+            <div class="card">
+                <h3>🌐 Rede</h3>
+                <div class="info-row">
+                    <span class="info-label">Dados Enviados:</span>
+                    <span class="info-value">{{ info.rede.enviado_gb }} GB</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Dados Recebidos:</span>
+                    <span class="info-value">{{ info.rede.recebido_gb }} GB</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total de Tráfego:</span>
+                    <span class="info-value">{{ info.rede.enviado_gb + info.rede.recebido_gb }} GB</span>
+                </div>
+            </div>
+
+            <!-- Sistema -->
+            <div class="card">
+                <h3>⏱️ Status do Sistema</h3>
+                <div class="info-row">
+                    <span class="info-label">Tempo Ligado:</span>
+                    <span class="info-value">{{ info.tempo_atividade }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Processos Ativos:</span>
+                    <span class="info-value">{{ info.processos_ativos }}</span>
+                </div>
+                {% if info.bateria.percentual %}
+                <div class="info-row">
+                    <span class="info-label">Bateria:</span>
+                    <span class="info-value">
+                        {{ info.bateria.percentual }}% 
+                        {% if info.bateria.conectada %}🔌{% else %}🔋{% endif %}
+                    </span>
+                </div>
+                {% endif %}
             </div>
         </div>
-        <footer class="mt-5 text-center text-muted small">
-            <span>Desenvolvido com <i class="bi bi-heart-fill text-danger"></i> usando Flask, Bootstrap 5 e
-            psutil.</span>
-            <br>
-            <span> Douglas Eduardo Guimarães Pereira - RA 2320841</span>
-        </footer>
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+        <!-- GPU Cards -->
+        {% if info.gpu %}
+        <div class="grid" style="margin-top: 20px;">
+            {% for gpu in info.gpu %}
+            <div class="card gpu-card">
+                <h3>🎮 GPU - {{ gpu.name }}</h3>
+                <div class="resource-info">
+                    <div class="resource-text" style="color: white;">
+                        Uso: {{ gpu.load }}% - VRAM: {{ gpu.memory_used }}GB / {{ gpu.memory_total }}GB
+                    </div>
+                    <div class="resource-bar">
+                        <div class="resource-fill" style="width: {{ gpu.load }}%; background: linear-gradient(90deg, #FF6B6B, #FF8E8E);"></div>
+                    </div>
+                </div>
+                <div class="info-row" style="border-color: rgba(255,255,255,0.2);">
+                    <span class="info-label" style="color: rgba(255,255,255,0.9);">Memória Livre:</span>
+                    <span class="info-value" style="color: white;">{{ gpu.memory_free }}GB</span>
+                </div>
+                <div class="info-row" style="border-color: rgba(255,255,255,0.2);">
+                    <span class="info-label" style="color: rgba(255,255,255,0.9);">Temperatura:</span>
+                    <span class="info-value" style="color: white;">{{ gpu.temperature }}°C</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Auto refresh da página a cada 30 segundos
+        setTimeout(function(){
+            location.reload();
+        }, 30000);
+    </script>
+</body>
 </html>
