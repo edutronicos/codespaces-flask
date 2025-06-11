@@ -13,17 +13,14 @@ Este projeto é uma aplicação web desenvolvida com Flask que exibe informaçõ
 
 ## Como executar localmente
 
-1. **Clone o repositório (se aplicável):**
+1. **Clone o repositório:**
    ```bash
-   git clone <url-do-repositorio>
-   cd codespaces-flask
+   git clone https://github.com/edutronicos/codespaces-flask
    ```
 
-2. **Crie um ambiente virtual (opcional, mas recomendado):**
+2. **Acesse a pasta do projeto:**
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate     # Windows
+   cd codespaces-flask
    ```
 
 3. **Instale as dependências:**
@@ -41,17 +38,12 @@ Este projeto é uma aplicação web desenvolvida com Flask que exibe informaçõ
 
 1. **Build da imagem:**
    ```bash
-   docker build -t flask-monitor .
+   docker pull edutronicos/flask-app:latest
    ```
 
 2. **Execute o container:**
    ```bash
-   docker run -p 5000:5000 flask-monitor
-   ```
-
-   Ou utilize a imagem pronta disponível no Docker Hub:
-   ```bash
-   docker run -p 5000:5000 edutronicos/docker-flask:1.0
+   docker run -p 5000:5000 edutronicos/flask-app:latest
    ```
 
 ## Estrutura do Projeto
@@ -76,6 +68,6 @@ Desenvolvido por Douglas Eduardo Guimarães Pereira - RA 2320841
 ---
 
 Imagem Docker disponível em:  
-**edutronicos/docker-flask:1.0**
+**[edutronicos/flask-app:latest](https://hub.docker.com/r/edutronicos/flask-app)**
 
 ---
